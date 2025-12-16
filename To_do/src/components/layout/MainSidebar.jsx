@@ -13,9 +13,11 @@ const MainSidebar = () => {
   const { categories, loading: catLoading } = useSelector(
     (state) => state.listOfCategory
   );
-  const { tasks, loading: taskLoading } = useSelector(
-    (state) => state.listOfTask
-  );
+  const {
+    tasks,
+    loading: taskLoading,
+    allTasks,
+  } = useSelector((state) => state.listOfTask);
   console.log("this is all : ", categories);
   const [openCategoryId, setOpenCategoryId] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
@@ -78,7 +80,10 @@ const MainSidebar = () => {
           <ul className="space-y-2">
             {categories.map((cat) => {
               const isOpen = isCategoryOpen(cat.id);
-
+              const tasksForCategory = allTasks.filter(
+                (task) => task.categoryId === cat.id
+              );
+              console.log("from sidebarTask", tasksForCategory);
               return (
                 <li key={cat.id} className="flex flex-col">
                   {/* Category row */}
@@ -107,8 +112,8 @@ const MainSidebar = () => {
                   {/* Tasks under category */}
                   {isOpen && !taskLoading && (
                     <ul className="ml-4 mt-1 space-y-1 border-l border-gray-300 dark:border-zinc-700 pl-3">
-                      {tasks.length > 0 ? (
-                        tasks.map((task, index) => (
+                      {allTasks.length > 0 ? (
+                        tasksForCategory.map((task, index) => (
                           <li
                             key={index}
                             className="text-sm text-gray-700 dark:text-gray-300"
