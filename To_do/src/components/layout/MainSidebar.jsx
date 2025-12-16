@@ -36,9 +36,7 @@ const MainSidebar = () => {
     console.log("this is elon cartID", catId);
     setOpenCategoryId((prev) => (prev === catId ? null : catId));
     //** */ fetching task clicked category
-    await dispatch(
-      fetchTasksByCategory({ userId: user?.uid, categoryId: catId })
-    );
+  
   };
   // useEffect(() => {
   //   const isReload =
