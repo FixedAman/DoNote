@@ -17,6 +17,7 @@ import {
   fetchCategories,
 } from "../app/features/tasks/categorySlice";
 import TaskList from "../components/layout/taskSection";
+
 const Home = () => {
   const [taskText, setTaskText] = useState("");
   const [filteredTasks, setFilteredTask] = useState([]);
