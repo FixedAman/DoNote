@@ -34,6 +34,9 @@ const Home = () => {
       dispatch(fetchUserTasksFromFirebase({ userId: user.uid }));
     }
   }, [user, dispatch]);
+  useEffect(() => {
+    console.log("updatedOne: ", filteredTasks);
+  }, [filteredTasks]);
   const {
     allTasks,
     loading: allTaskLoader,
@@ -182,6 +185,7 @@ const Home = () => {
           <ul className="space-y-2">
             <TaskList
               filteredTasks={filteredTasks}
+              setFilteredTask={setFilteredTask}
               handleUpdateText={handleUpdateText}
               onComplete={handleToggleComplete}
               loading={allTaskLoader}

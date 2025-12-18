@@ -1,14 +1,15 @@
 import { MdDelete } from "react-icons/md";
 import { FcEditImage } from "react-icons/fc";
 import { FaCircleCheck } from "react-icons/fa6";
-import { DndContext } from "@dnd-kit/core";
+import { closestCenter, DndContext } from "@dnd-kit/core";
 import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
-
+import { CSS } from "@dnd-kit/utilities";
+import { useEffect } from "react";
 const SortableTaskItem = ({
   task,
   onComplete,
@@ -19,7 +20,7 @@ const SortableTaskItem = ({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task.id });
   const style = {
-    transform: css.Transform.toString(transform),
+    transform: CSS.Transform.toString(transform),
     transition,
   };
 
@@ -86,67 +87,37 @@ const TaskList = ({
   handleUpdateText,
   loading,
   handleDelete,
+  setFilteredTask,
 }) => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = filteredTasks.findIndex()
+    const oldIndex = filteredTasks.findIndex((t) => t.id === active.id);
+    const newIndex = filteredTasks.findIndex((t) => t.id === over.id);
+    const reordered = arrayMove(filteredTasks, oldIndex, newIndex);
+
+    setFilteredTask(reordered);
+
+    console.log("newOrder", reordered);
   };
   return (
     <>
-      <DndContext>
-        {filteredTasks?.map((task) => (
-          <li
-            key={task.id}
-            className="flex items-center justify-between dark:bg-slate-700 p-3 rounded shadow"
-          >
-            <span className="dark:text-slate-200">{task.text}</span>
-            <div className="button-components flex">
-              <button
-                className=" p-2 text-red-500 hover:text-red-700 
-    dark:text-red-400 dark:hover:text-red-300
-    transition-colors duration-200
-    rounded-full hover:bg-red-100 dark:hover:bg-red-900/50"
-                disabled={loading}
-                onClick={() => handleDelete(task.id)}
-              >
-                <MdDelete />
-              </button>
-              <button
-                disabled={loading}
-                onDoubleClick={(e) => {
-                  handleUpdateText(task);
-                }}
-              >
-                <FcEditImage />
-              </button>
-              <button
-                className={`p-2 ml-2
-    text-gray-400 hover:text-green-500 
-    dark:text-gray-500 dark:hover:text-green-400
-    transition-colors duration-200
-    rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 
-     
-     `}
-                disabled={loading}
-                onClick={() =>
-                  onComplete({
-                    taskId: task.id,
-                    completed: task.completed,
-                  })
-                }
-              >
-                <FaCircleCheck
-                  className={`${
-                    task.completed
-                      ? "text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.7)]"
-                      : "text-gray-400"
-                  }`}
-                />
-              </button>
-            </div>
-          </li>
-        ))}
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext
+          items={filteredTasks.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {filteredTasks.map((task) => (
+            <SortableTaskItem
+              task={task}
+              key={task.id}
+              onComplete={onComplete}
+              handleDelete={handleDelete}
+              handleUpdateText={handleUpdateText}
+              loading={loading}
+            />
+          ))}
+        </SortableContext>
       </DndContext>
     </>
   );
