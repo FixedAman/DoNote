@@ -25,6 +25,9 @@ const Home = () => {
   const [editingTask, setEditingTask] = useState(null);
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
+  //*! for searching and filtering tasks */
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusfilter, setStatusFilter] = useState("all");
   //**for categoryManager  */
   const [selectedCategory, setSelectedCategory] = useState(null);
   // ** for child container categoryManager
@@ -141,7 +144,6 @@ const Home = () => {
           />
         )}
       </div>
-
       <div className="max-w-md mx-auto mt-16 p-4    ">
         <div className="search-and-title flex items-center  mb-8 flex-col">
           <h1 className="text-2xl font-bold mb-4 dark:text-white">
@@ -149,8 +151,10 @@ const Home = () => {
           </h1>
           <div className="search-bar  mb-12">
             <TaskSearchFilter
-              tasks={allTasks}
-              onFilter={(filter) => setFilteredTask(filter)}
+             searchTerm={searchTerm}
+             onSearchChange={setSearchTerm}
+             filter={statusfilter}
+             onStatusFilter={setFilteredTask}
             />
           </div>
         </div>

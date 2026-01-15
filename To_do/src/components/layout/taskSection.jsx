@@ -9,7 +9,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect } from "react";
+
 const SortableTaskItem = ({
   task,
   onComplete,
