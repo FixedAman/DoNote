@@ -96,7 +96,7 @@ const TaskList = ({
     const newIndex = filteredTasks.findIndex((t) => t.id === over.id);
     const reordered = arrayMove(filteredTasks, oldIndex, newIndex);
 
-    setFilteredTask(reordered);
+    // setFilteredTask(reordered);
 
     console.log("newOrder", reordered);
   };

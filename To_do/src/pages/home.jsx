@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTaskInFirebase,
@@ -20,7 +20,7 @@ import TaskList from "../components/layout/taskSection";
 
 const Home = () => {
   const [taskText, setTaskText] = useState("");
-  const [filteredTasks, setFilteredTask] = useState([]);
+  // const [filteredTasks, setFilteredTask] = useState([]);
   const { user, isGuest } = useSelector((state) => state.auth);
   const [editingTask, setEditingTask] = useState(null);
   const dispatch = useDispatch();
@@ -37,18 +37,32 @@ const Home = () => {
       dispatch(fetchUserTasksFromFirebase({ userId: user.uid }));
     }
   }, [user, dispatch]);
-  useEffect(() => {
-    console.log("updatedOne: ", filteredTasks);
-  }, [filteredTasks]);
+
   const {
     allTasks,
     loading: allTaskLoader,
     error,
   } = useSelector((state) => state?.listOfTask);
 
-  useEffect(() => {
-    setFilteredTask(allTasks);
-  }, [allTasks]);
+  const filteredTasks = useMemo(() => {
+    return allTasks.filter((task) => {
+      const matchSearch = task.text
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      const matchStatus =
+        statusfilter === "all"
+          ? true
+          : statusfilter === "completed"
+          ? task.completed
+          : !task.completed;
+
+      return matchSearch && matchStatus;
+    });
+  }, [allTasks, searchTerm, statusfilter]);
+  // useEffect(() => {
+  //   setFilteredTask(allTasks);
+  // }, [allTasks]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!taskText || !user.uid) return;
@@ -92,6 +106,7 @@ const Home = () => {
             taskText: taskText.trim(),
             userId: user.uid,
             categoryId: mainCategoryId,
+            order: allTasks.length,
           })
         ).unwrap();
       }
@@ -151,10 +166,10 @@ const Home = () => {
           </h1>
           <div className="search-bar  mb-12">
             <TaskSearchFilter
-             searchTerm={searchTerm}
-             onSearchChange={setSearchTerm}
-             filter={statusfilter}
-             onStatusFilter={setFilteredTask}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              filter={statusfilter}
+              onStatusFilter={setStatusFilter}
             />
           </div>
         </div>
@@ -189,7 +204,7 @@ const Home = () => {
           <ul className="space-y-2">
             <TaskList
               filteredTasks={filteredTasks}
-              setFilteredTask={setFilteredTask}
+              
               handleUpdateText={handleUpdateText}
               onComplete={handleToggleComplete}
               loading={allTaskLoader}

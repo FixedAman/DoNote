@@ -15,7 +15,7 @@ import { decryptData, encryptData } from "../../../lib/crypto";
 // adding task in firebase
 export const addTaskInFirebase = createAsyncThunk(
   "tasks/addTask",
-  async ({ taskText, userId, categoryId }, { rejectWithValue }) => {
+  async ({ taskText, userId, categoryId, order }, { rejectWithValue }) => {
     try {
       // normalized
       const normalizedInput = taskText.toLowerCase().replace(/\s+/g, "");
@@ -43,8 +43,15 @@ export const addTaskInFirebase = createAsyncThunk(
         completed: false,
         categoryId,
         createdAt: new Date().toISOString(),
+        order,
       });
-      return { id: taskRef.id, text: taskText, completed: false, categoryId };
+      return {
+        id: taskRef.id,
+        text: taskText,
+        completed: false,
+        categoryId,
+        order,
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -63,17 +70,20 @@ export const fetchUserTasksFromFirebase = createAsyncThunk(
         where("userId", "==", userId)
       );
       const querySnapshot = await getDocs(taskQuery);
-      return querySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          text: decryptData(data.text) || "facing error",
-          completed: data.completed,
-          userId: data.userId,
-          categoryId: data.categoryId,
-          createdAt: data.createdAt,
-        };
-      });
+      return querySnapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            text: decryptData(data.text) || "facing error",
+            completed: data.completed,
+            userId: data.userId,
+            categoryId: data.categoryId,
+            createdAt: data.createdAt,
+            order: data.order,
+          };
+        })
+        .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
     } catch (error) {
       return rejectWithValue(error.message);
     }
