@@ -95,11 +95,16 @@ const TaskList = ({
     const oldIndex = filteredTasks.findIndex((t) => t.id === active.id);
     const newIndex = filteredTasks.findIndex((t) => t.id === over.id);
     const reordered = arrayMove(filteredTasks, oldIndex, newIndex);
-
     // setFilteredTask(reordered);
-
+    console.log(active);
+    console.log(over);
+    const updatedTasks = reordered.map((task, index) => ({
+      id: task.id,
+      order: index,
+    }));
     console.log("newOrder", reordered);
   };
+
   return (
     <>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
