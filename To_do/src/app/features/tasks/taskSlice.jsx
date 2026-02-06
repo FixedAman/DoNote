@@ -8,10 +8,10 @@ import {
   query,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebase/firebaseconfig";
 import { decryptData, encryptData } from "../../../lib/crypto";
-
 // adding task in firebase
 export const addTaskInFirebase = createAsyncThunk(
   "tasks/addTask",
@@ -55,7 +55,7 @@ export const addTaskInFirebase = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 export const fetchUserTasksFromFirebase = createAsyncThunk(
   "tasks/fetchTasks",
@@ -67,7 +67,7 @@ export const fetchUserTasksFromFirebase = createAsyncThunk(
       console.log("ekhane problem ", userId);
       const taskQuery = query(
         collection(db, "tasks"),
-        where("userId", "==", userId)
+        where("userId", "==", userId),
       );
       const querySnapshot = await getDocs(taskQuery);
       return querySnapshot.docs
@@ -87,7 +87,7 @@ export const fetchUserTasksFromFirebase = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 export const deleteTaskFromFirbase = createAsyncThunk(
   "tasks/deleteTaskById",
@@ -98,7 +98,7 @@ export const deleteTaskFromFirbase = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 export const toggleTaskComplete = createAsyncThunk(
   "tasks/completeTask",
@@ -111,7 +111,7 @@ export const toggleTaskComplete = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 export const updateTasks = createAsyncThunk(
   "tasks/updateTask",
@@ -140,7 +140,7 @@ export const updateTasks = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 export const fetchTasksByCategory = createAsyncThunk(
   "tasks/fetchTasksByCategory",
@@ -166,7 +166,23 @@ export const fetchTasksByCategory = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
+);
+export const re_orderInFirebase = createAsyncThunk(
+  "tasks/re-orderInFirebase",
+  async (updatedOrder, { rejectWithValue }) => {
+    try {
+      const batch = writeBatch(db);
+      updatedOrder.forEach((item) => {
+        const taskRef = doc(db, "tasks", item.id);
+        batch.update(taskRef, { order: item.order });
+      });
+      await batch.commit();
+      return updatedOrder;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  },
 );
 const taskSlice = createSlice({
   name: "tasks",
@@ -214,7 +230,7 @@ const taskSlice = createSlice({
         state.loading = false;
         state.tasks = state.tasks.filter((task) => task.id !== action.payload);
         state.allTasks = state.allTasks.filter(
-          (task) => task.id !== action.payload
+          (task) => task.id !== action.payload,
         );
       })
       .addCase(toggleTaskComplete.pending, (state, action) => {
@@ -226,10 +242,10 @@ const taskSlice = createSlice({
       .addCase(toggleTaskComplete.fulfilled, (state, action) => {
         state.loading = false;
         const task = state.tasks.find(
-          (task) => task.id === action.payload.taskId
+          (task) => task.id === action.payload.taskId,
         );
         const allTasks = state.allTasks.find(
-          (task) => task.id === action.payload.taskId
+          (task) => task.id === action.payload.taskId,
         );
 
         if (task && allTasks) {
@@ -241,7 +257,7 @@ const taskSlice = createSlice({
         state.loading = false;
         const task = state.tasks.find((t) => t.id === action.payload.taskId);
         const allTasks = state.allTasks.find(
-          (t) => t.id === action.payload.taskId
+          (t) => t.id === action.payload.taskId,
         );
         if (task && allTasks) {
           task.text = action.payload.newUpdateText;
@@ -267,6 +283,21 @@ const taskSlice = createSlice({
         state.loading = false;
         state.tasks = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
+      })
+      .addCase(re_orderInFirebase.fulfilled, (state, action) => {
+        state.loading = false;
+        const orderMap = new Map(
+          action.payload.map((item) => [item.id, item.order]),
+        );
+        state.allTasks.forEach((task) => {
+          if (orderMap.has(task.id)) {
+            task.order = orderMap.get(task.id);
+          }
+        });
+        state.allTasks.sort((a, b) => a.order - b.order);
+      })
+      .addCase(re_orderInFirebase.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });

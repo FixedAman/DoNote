@@ -8,8 +8,9 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
+import { useDispatch } from "react-redux";
 import { CSS } from "@dnd-kit/utilities";
-
+import { re_orderInFirebase } from "../../app/features/tasks/taskSlice";
 const SortableTaskItem = ({
   task,
   onComplete,
@@ -89,6 +90,7 @@ const TaskList = ({
   handleDelete,
   setFilteredTask,
 }) => {
+  const dispatch = useDispatch();
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -102,7 +104,9 @@ const TaskList = ({
       id: task.id,
       order: index,
     }));
-    console.log("newOrder", reordered);
+    if (updatedTasks) {
+      dispatch(re_orderInFirebase(updatedTasks));
+    }
   };
 
   return (
