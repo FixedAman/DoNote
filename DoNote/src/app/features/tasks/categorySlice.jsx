@@ -8,7 +8,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../firebase/firebaseconfig";
+import { db } from "../../firebase/firebaseConfig";
 
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
