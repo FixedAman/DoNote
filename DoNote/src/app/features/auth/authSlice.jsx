@@ -5,7 +5,7 @@ import {
   signInWithRedirect,
   signOut,
 } from "firebase/auth";
-import { auth, db } from "../../firebase/firebaseconfig";
+import { auth, db } from "../../firebase/firebaseConfig";
 import {
   collection,
   doc,
@@ -31,21 +31,21 @@ export const signInWithGoogle = createAsyncThunk(
       // guest snapShot
       const queryGuestSnapshot = query(
         collection(db, "tasks"),
-        where("userId", "==", "local/guestUser")
+        where("userId", "==", "local/guestUser"),
       );
       const guestData = await getDocs(queryGuestSnapshot);
       //transfer guest data to google signed in
       const updatePromises = guestData.docs.map((taskDoc) =>
         updateDoc(doc(db, "tasks", taskDoc.id), {
           userId: singedInUser.uid,
-        })
+        }),
       );
       await Promise.all(updatePromises);
       return singedInUser;
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 export const googleLogout = createAsyncThunk("auth/googleLogout", async () => {
   await signOut(auth);
