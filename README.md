@@ -6,6 +6,7 @@
 - Edit existing tasks
 - Delete tasks
 - Mark tasks as completed
+- Drag and drop functionality
 - Filter tasks (All / Completed / Pending)
 
 ## Current Upcoming Features 🐦
