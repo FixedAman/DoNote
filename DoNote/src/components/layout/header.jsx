@@ -48,8 +48,10 @@ const Header = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="text-xl font-bold">
-            <Link to="/">ToDoApp</Link>
+          <div className="text-xl font-bold flex ">
+            <Link to="/" className="flex gap-2">
+              DoNote <img src="/post-it.png" className="w-5 " />
+            </Link>
           </div>
 
           {/* Nav + Auth */}
