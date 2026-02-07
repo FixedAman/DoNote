@@ -10,7 +10,9 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { db } from "../../firebase/firebaseconfig";
+import { db } from "../../firebase/firebaseConfig";
+
+
 import { decryptData, encryptData } from "../../../lib/crypto";
 // adding task in firebase
 export const addTaskInFirebase = createAsyncThunk(
