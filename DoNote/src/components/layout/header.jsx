@@ -8,6 +8,7 @@ import {
 } from "../../app/features/auth/authSlice";
 import { MdDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
+import { CiMenuBurger } from "react-icons/ci";
 const Header = () => {
   const dispatch = useDispatch();
   const { user, isGuest } = useSelector((state) => state.auth);
@@ -45,7 +46,10 @@ const Header = () => {
   }, [isDark]);
   return (
     <header className="w-full bg-zinc-900 text-white shadow fixed top-0 left-0 right-0 z-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="">
+        <CiMenuBurger />
+      </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="text-xl font-bold flex ">

@@ -4,6 +4,7 @@ import { fetchCategories } from "../../app/features/tasks/categorySlice";
 import { fetchTasksByCategory } from "../../app/features/tasks/taskSlice";
 import { FaArrowDown, FaRainbow } from "react-icons/fa6";
 import { FaArrowUp } from "react-icons/fa";
+import { CiMenuBurger } from "react-icons/ci";
 import Loader from "../ui/Loader";
 const MainSidebar = () => {
   // ** all redux queries
@@ -11,7 +12,7 @@ const MainSidebar = () => {
   const { user } = useSelector((state) => state.auth);
 
   const { categories, loading: catLoading } = useSelector(
-    (state) => state.listOfCategory
+    (state) => state.listOfCategory,
   );
   const {
     tasks,
@@ -78,7 +79,7 @@ const MainSidebar = () => {
             {categories.map((cat) => {
               const isOpen = isCategoryOpen(cat.id);
               const tasksForCategory = allTasks.filter(
-                (task) => task.categoryId === cat.id
+                (task) => task.categoryId === cat.id,
               );
               console.log("from sidebarTask", tasksForCategory);
               return (
