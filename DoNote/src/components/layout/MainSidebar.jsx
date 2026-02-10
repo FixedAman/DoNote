@@ -4,8 +4,8 @@ import { fetchCategories } from "../../app/features/tasks/categorySlice";
 import { fetchTasksByCategory } from "../../app/features/tasks/taskSlice";
 import { FaArrowDown, FaRainbow } from "react-icons/fa6";
 import { FaArrowUp } from "react-icons/fa";
-import { CiMenuBurger } from "react-icons/ci";
 import Loader from "../ui/Loader";
+
 const MainSidebar = () => {
   // ** all redux queries
   const dispatch = useDispatch();
@@ -38,26 +38,19 @@ const MainSidebar = () => {
     setOpenCategoryId((prev) => (prev === catId ? null : catId));
     //** */ fetching task clicked category
   };
-  // useEffect(() => {
-  //   const isReload =
-  //     performance.navigation.type === performance.navigation.TYPE_RELOAD;
-  //   if (isReload) {
-  //     alert("page reload!");
-  //   } else {
-  //     alert("page not found!");
-  //   }
-  // }, [handleClick]);
-  /** helper function to check  if the current category is open  */
+  const isOpenSidebar = useSelector((state) => state.ui?.isOpenSidebar);
   const isCategoryOpen = (catId) => openCategoryId === catId;
-
   return (
     <>
       {/* changing the ui in todo list  */}
       <aside
-        className="fixed left-0  w-64 
-                 bg-white dark:bg-zinc-900 
-                 border-r border-gray-200 dark:border-zinc-800
-                 p-4 z-50 dark:text-white overflow-y-auto h-full"
+        className={`fixed top-24 left-0 w-64 h-full
+    bg-white dark:bg-zinc-900
+    border-r border-gray-200 dark:border-zinc-800
+    p-4 z-50 dark:text-white overflow-y-auto
+    transform transition-transform duration-300
+    ${isOpenSidebar ? "translate-x-0" : "-translate-x-full"}
+  `}
       >
         <h3 className="text-lg font-semibold pb-2 mb-4 border-b border-gray-300 dark:border-zinc-700">
           Categories
