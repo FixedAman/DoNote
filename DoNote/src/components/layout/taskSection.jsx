@@ -88,7 +88,6 @@ const TaskList = ({
   handleUpdateText,
   loading,
   handleDelete,
-  setFilteredTask,
 }) => {
   const dispatch = useDispatch();
   const handleDragEnd = (event) => {
@@ -98,7 +97,7 @@ const TaskList = ({
     const newIndex = filteredTasks.findIndex((t) => t.id === over.id);
     const reordered = arrayMove(filteredTasks, oldIndex, newIndex);
     // setFilteredTask(reordered);
-    console.log(active);
+
     console.log(over);
     const updatedTasks = reordered.map((task, index) => ({
       id: task.id,
